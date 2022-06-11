@@ -1,0 +1,38 @@
+version: "3"
+
+volumes:
+  db-exampleApp:
+
+networks:
+  net-example-app:
+
+services:
+  example-id-db:
+    image: mysql:5.7.33
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+      - ${DB_PORT}:3306
+    expose:
+      - 3306
+    volumes:
+      - db-exampleApp:/var/lib/mysql
+    networks:
+      - net-example-app
+
+  example-id-be-phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: example-id-db
+    ports:
+      - 8080:80
+    depends_on:
+      - example-id-db
+    networks:
+      - net-example-app
